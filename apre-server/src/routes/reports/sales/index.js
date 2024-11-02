@@ -78,4 +78,90 @@ router.get('/regions/:region', (req, res, next) => {
   }
 });
 
+/**
+ * @description
+ *
+ * GET /salespeople
+ *
+ * Fetches a list of distinct salesperson
+ *
+ * Example:
+ * fetch('/salespeople')
+ *  .then(response => response.json())
+ *  .then(data => console.log(data))
+ */
+router.get('/salespeople', (req, res, next) => {
+  // Surround our query in a try-catch for added safety
+  try {
+    mongo (async db => {
+      // Query our database for an array of distinct salesperson
+      const salespeople = await db.collection('sales').distinct('salesperson');
+      // Send our results to the response
+      res.send(salespeople);
+    }, next);
+  } catch (err) {
+    // Log the error
+    console.error('Error getting distinct salesperson', err);
+    // Pass our error object to the next middleware
+    next(err);
+  }
+});
+
+/**
+ * @description
+ *
+ * GET /salesperson/:salesPersonName
+ *
+ * Fetches sales data for a specific salesperson
+ *
+ * Example:
+ * fetch('/salesperson/john doe')
+ *  .then(response => response.json())
+ *  .then(data => console.log(data));
+ */
+router.get('/salespeople/:personName', (req, res, next) => {
+  // Surround our query in a try-catch for added safety
+  try {
+    mongo (async db => {
+      // Query our database for an array of distinct salesperson
+      const salesDataForSalesPerson = await db.collection('sales').aggregate([
+        // Match on the provided personName
+        { $match: { salesperson: req.params.personName } },
+        // Group our data
+        {
+          $group: {
+            _id: {
+              category: '$category',
+              channel: '$channel',
+              region: '$region'
+            },
+            totalSales: { $sum: 1 },
+            totalAmount: { $sum: '$amount' }
+          }
+        },
+        // Create an object to project the required fields
+        {
+          $project: {
+            _id: 0,
+            category: '$_id.category',
+            channel: '$_id.channel',
+            region: '$_id.region',
+            totalSales: 1,
+            totalAmount: 1
+          }
+        },
+        // Sort by category
+        { $sort: { category: 1 } }
+      ]).toArray();
+      // Send our results to the response
+      res.send(salesDataForSalesPerson);
+    }, next);
+  } catch (err) {
+    // Log the error
+    console.error('Error getting sales data for salesperson', err);
+    // Pass our error object to the next middleware
+    next(err);
+  }
+});
+
 module.exports = router;
