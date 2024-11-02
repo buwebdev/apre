@@ -110,12 +110,12 @@ router.get('/salespeople', (req, res, next) => {
 /**
  * @description
  *
- * GET /salesperson/:salesPersonName
+ * GET /salespeople/:salesPersonName
  *
  * Fetches sales data for a specific salesperson
  *
  * Example:
- * fetch('/salesperson/john doe')
+ * fetch('/salespeople/john doe')
  *  .then(response => response.json())
  *  .then(data => console.log(data));
  */
