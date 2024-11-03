@@ -78,4 +78,33 @@ router.get('/regions/:region', (req, res, next) => {
   }
 });
 
+/**
+ * GET /api/reports/sales/customer/:customer
+ * Define the route to get sales data by customer
+ */
+router.get('/customer/:customer', async (req, res, next) => {
+  const { customer } = req.params;
+  try {
+    const salesData = await fetchSalesDataByCustomer(customer);
+    if (!salesData || salesData.length === 0) {
+      return res.status(200).json([]);
+    }
+    res.status(200).json(salesData);
+  } catch (error) {
+    console.error('Error fetching sales data:', error);
+    res.status(500).json({
+      message: 'Error fetching sales data', // Expected error message
+      error: error // Include the error object or details
+    });
+  }
+});
+
+
+// Function to fetch sales data for specific customer
+async function fetchSalesDataByCustomer(customer) {
+  return mongo(async (db) => {
+    return db.collection('sales').find({ customer }).toArray();
+  });
+}
+
 module.exports = router;
