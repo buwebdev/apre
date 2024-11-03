@@ -143,3 +143,90 @@ describe('Apre Sales Report API - Sales by Region', () => {
     });
   });
 });
+
+//Test Suite for Sales By Product API
+describe('Apre Sales Report API - Sales By Product', () => {
+  beforeEach(() => {
+    mongo.mockClear();
+  });
+  //Test for returned sales data for product
+  it('should return sales data for product', async () => {
+    // Mock the MongoDB implementation
+    mongo.mockImplementation(async (callback) => {
+      const db = {
+        collection: jest.fn().mockReturnThis(),
+        aggregate: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockResolvedValue([
+            {
+              product: 'Fitness Tracker',
+              totalSales: '300'
+            }
+          ])
+        })
+      };
+      await callback(db);
+    });
+
+    // Make a request to the endpoint
+    const response = await request(app).get('/api/reports/sales/products/Fitness%20Tracker');
+
+    // Assert the response
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([
+      {
+        product: 'Fitness Tracker',
+        totalSales: '300'
+      }
+    ]);
+  });
+
+  //Test for returning an empty array if no sales data is found for a product
+  it('should return an empty array and 200 status if no sales data is found for product', async () => {
+    //Mock the mongoDB implementation
+    mongo.mockImplementation(async (callback) => {
+      const db = {
+        collection: jest.fn().mockReturnThis(),
+        aggregate: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockResolvedValue([])
+        })
+      };
+      await callback(db);
+    });
+
+    // Make a request to the endpoint
+    const response = await request(app).get('/api/reports/sales/products/Fake%20Product');
+
+    //Expected response
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+
+  //Test for returned product and totalSales fields
+  it('should return data with product and totalSales fields', async () => {
+    //Mock implementation
+    mongo.mockImplementation(async (callback) => {
+      const db = {
+        collection: jest.fn().mockReturnThis(),
+        aggregate: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockResolvedValue([
+            {
+              product: 'Smart Watch',
+              totalSales: '4300'
+            }
+          ])
+        })
+      };
+      await callback(db);
+    });
+
+    //Make request to the endpoint
+    const response = await request(app).get('/api/reports/sales/products/Smart%20Watch');
+    const data = response.body[0];
+
+    //Expected response
+    expect(data).toHaveProperty('product');
+    expect(data).toHaveProperty('totalSales');
+  });
+
+});
