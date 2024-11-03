@@ -144,9 +144,9 @@ describe('Apre Sales Report API - Sales by Region', () => {
   });
 });
 
-// Test the sales report API to fetch distinct salesperson
+// Test suite for the sales report API to fetch an array of distinct salesperson
 describe('Apre Sales Report API - Salespeople', () => {
-  // Clear our mock database before each test
+  // Clear our mock before each test
   beforeEach(() => {
     mongo.mockClear();
   });
@@ -208,9 +208,9 @@ describe('Apre Sales Report API - Salespeople', () => {
   });
 });
 
-// Test the sales report API to return Sales Data by Salesperson
+// Test suite for the sales report API to return Sales Data by Salesperson
 describe('Apre Sales Report API - Sales by Salesperson', () => {
-  // Clear our mock database before each test
+  // Clear our mock before each test
   beforeEach(() => {
     mongo.mockClear();
   });
@@ -265,21 +265,21 @@ describe('Apre Sales Report API - Sales by Salesperson', () => {
               "category": "Furniture",
               "channel": "Online",
               "region": "East",
-              "totalSales": 1,
+              "salesCount": 1,
               "totalAmount": 300
             },
             {
               "category": "Electronics",
               "channel": "Retail",
               "region": "North",
-              "totalSales": 2,
+              "salesCount": 2,
               "totalAmount": 2400
             },
             {
               "category": "Accessories",
               "channel": "Online",
               "region": "South",
-              "totalSales": 4,
+              "salesCount": 4,
               "totalAmount": 200
             }
           ])
@@ -299,21 +299,21 @@ describe('Apre Sales Report API - Sales by Salesperson', () => {
         "category": "Furniture",
         "channel": "Online",
         "region": "East",
-        "totalSales": 1,
+        "salesCount": 1,
         "totalAmount": 300
       },
       {
         "category": "Electronics",
         "channel": "Retail",
         "region": "North",
-        "totalSales": 2,
+        "salesCount": 2,
         "totalAmount": 2400
       },
       {
         "category": "Accessories",
         "channel": "Online",
         "region": "South",
-        "totalSales": 4,
+        "salesCount": 4,
         "totalAmount": 200
       }
     ]);

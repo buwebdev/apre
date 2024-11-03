@@ -83,7 +83,7 @@ router.get('/regions/:region', (req, res, next) => {
  *
  * GET /salespeople
  *
- * Fetches a list of distinct salesperson
+ * Fetches a list of distinct salesperson from the sales collection
  *
  * Example:
  * fetch('/salespeople')
@@ -113,6 +113,14 @@ router.get('/salespeople', (req, res, next) => {
  * GET /salespeople/:salesPersonName
  *
  * Fetches sales data for a specific salesperson
+ * Grouped by category, channel, and region
+ *
+ * Array contains
+ *  category
+ *  channel
+ *  region
+ *  salesCount
+ *  totalAmount
  *
  * Example:
  * fetch('/salespeople/john doe')
@@ -135,7 +143,7 @@ router.get('/salespeople/:personName', (req, res, next) => {
               channel: '$channel',
               region: '$region'
             },
-            totalSales: { $sum: 1 },
+            salesCount: { $sum: 1 },
             totalAmount: { $sum: '$amount' }
           }
         },
@@ -146,7 +154,7 @@ router.get('/salespeople/:personName', (req, res, next) => {
             category: '$_id.category',
             channel: '$_id.channel',
             region: '$_id.region',
-            totalSales: 1,
+            salesCount: 1,
             totalAmount: 1
           }
         },
