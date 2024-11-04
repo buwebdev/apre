@@ -143,3 +143,75 @@ describe('Apre Sales Report API - Sales by Region', () => {
     });
   });
 });
+
+describe('Apre Sales Report API - Sales by Customer and Salesperson', () => {
+  beforeEach(() => {
+    mongo.mockClear();
+  });
+
+  // Test the sales/customers-salespeople/:customer&:salesperson endpoint
+  it('should fetch sales data for a specific customer and salesperson', async () => {
+    mongo.mockImplementation(async (callback) => {
+      // Mock the MongoDB collection
+      const db = {
+        collection: jest.fn().mockReturnThis(),
+        aggregate: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockResolvedValue([
+            {
+              product: 'Gaming Console',
+              category: 'Electronics',
+              saleAmount: 500
+            }
+          ])
+        })
+      };
+      await callback(db);
+    });
+
+    // Send a GET request to the sales/customers-salespeople/:customer&:salesperson
+    const response = await request(app).get('/api/reports/sales/customers-salespeople/Epsilon%20Ltd&David%20Wilson');
+    expect(response.status).toBe(200); // Expect a 200 status code
+
+    // Expect the response body to match the expected data
+    expect(response.body).toEqual([
+      {
+        product: 'Gaming Console',
+        category: 'Electronics',
+        saleAmount: 500
+      }
+    ]);
+  });
+
+  it('should return 200 and an empty array if no sales data is found for the customer and salesperson', async () => {
+    // Mock the MongoDB implementation
+    mongo.mockImplementation(async (callback) => {
+      const db = {
+        collection: jest.fn().mockReturnThis(),
+        aggregate: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockResolvedValue([])
+        })
+      };
+      await callback(db);
+    });
+
+    // Make a request to the endpoint
+    const response = await request(app).get('/api/reports/sales/customers-salespeople/unknown-customer&unknown-salesperson');
+
+    // Assert the response
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  it('should return 404 for an invalid endpoint', async () => {
+    // Make a request to an invalid endpoint
+    const response = await request(app).get('/api/reports/sales/customers-salespeople/Mark Clark');
+
+    // Assert the response
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({
+      message: 'Not Found',
+      status: 404,
+      type: 'error'
+    });
+  });
+});
