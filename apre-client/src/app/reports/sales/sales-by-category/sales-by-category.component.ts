@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-// created component to display sales data by category using the chart component
+// created component to display sales data by category using the chart component. Updated 11/6/2024
 
 @Component({
   selector: 'app-sales-by-category',
