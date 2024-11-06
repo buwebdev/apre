@@ -43,7 +43,7 @@ import { CommonModule } from '@angular/common';
         </div>
 
         <div class="form__actions">
-          <input type="submit" class="button button--primary" value="Submit">
+          <input type="submit" class="button button--primary" value="Update User">
         </div>
       </form>
       <br />
