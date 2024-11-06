@@ -21,7 +21,8 @@ import { ChartComponent } from '../../../shared/chart/chart.component';
           </select>
         </div>
         <div class="form__actions">
-          <button class="button button--primary" type="submit">Submit</button>
+          // Change 'Submit' button text to 'Get Data' when form is submitted.
+          <button class="button button--primary" type="submit">Get Data</button>
         </div>
       </form>
 
