@@ -144,7 +144,7 @@ describe('Apre Sales Report API - Sales by Region', () => {
   });
 });
 
-// Test the sales report by category API
+// Test the sales report by category API, three tests in suite
 describe('Apre Sales Report API - Category', () => {
   beforeEach(() => {
     mongo.mockClear();

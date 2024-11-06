@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { SalesByCategoryComponent } from './sales-by-category.component';
 
+// Test Suite testing the Angular Component salesByCategory
+
 describe('SalesByCategoryComponent', () => {
   let component: SalesByCategoryComponent;
   let fixture: ComponentFixture<SalesByCategoryComponent>;

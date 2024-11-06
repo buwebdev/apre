@@ -107,7 +107,7 @@ router.get('/categories', (req, res, next) => {
  *
  * GET /categories/:category
  *
- * Fetches sales data for a specific category.
+ * Fetches sales data for a specific category
  *
  * Example:
  * fetch('/categories/accessories')
