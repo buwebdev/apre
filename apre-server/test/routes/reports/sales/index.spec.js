@@ -143,3 +143,85 @@ describe('Apre Sales Report API - Sales by Region', () => {
     });
   });
 });
+
+// Testing Sales by Customer endpoint with valid and invalid customer names
+describe('Apre Sales Report API - Sales by Customer', () => {
+  // Set up the default behavior for the mongo mock before each test
+  beforeEach(() => {
+    // Mock the mongo function to return an object with the required methods
+    mongo.mockImplementation(async (callback) => {
+      const collectionMock = {
+        find: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockResolvedValue([])
+        }),
+        distinct: jest.fn().mockResolvedValue([]),
+        aggregate: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockResolvedValue([])
+        })
+      };
+      return await callback({ collection: jest.fn(() => collectionMock) });
+    });
+  }); 
+
+  // Test case: Should return 404 for an invalid customer name
+  it('should fetch sales data for a specific customer', async () => {
+    mongo.mockImplementationOnce(async (callback) => {
+      const collectionMock = {
+        find: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockResolvedValue([
+            { customer: 'Lambda LLC', amount: 100 },
+            { customer: 'Chi Co', amount: 300 }
+          ])
+        })
+      };
+      return await callback({ collection: jest.fn(() => collectionMock) });
+    });
+  
+    const response = await request(app).get('/api/reports/sales/customer/Lambda LLC');
+  
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([
+      { customer: 'Lambda LLC', amount: 100 },
+      { customer: 'Chi Co', amount: 300 }
+    ]);
+  });  
+
+  // Test case: Should return 200 with an empty array if no sales data is found for the customer
+  it('should return 200 with an empty array if no sales data is found for the customer', async () => {
+    const response = await request(app).get('/api/reports/sales/customer/nonexistent_customer');
+  
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });  
+  
+  // Test case: Should return 500 if there is a database error
+  it('should return 500 if there is a database error', async () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  
+    mongo.mockImplementationOnce(async () => {
+      throw new Error('Database error');
+    });
+  
+    const response = await request(app).get('/api/reports/sales/customer/Lambda LLC');
+  
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({
+      message: 'Error fetching sales data',
+      error: expect.any(Object)
+    });
+  
+    consoleErrorSpy.mockRestore();
+  });  
+
+  // Test case: Should return 404 for an invalid endpoint
+  it('should return 404 for an invalid endpoint', async () => {
+    const response = await request(app).get('/api/reports/sales/invalid-endpoint');
+  
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({
+      message: 'Not Found',
+      status: 404,
+      type: 'error'
+    });
+  });  
+});
