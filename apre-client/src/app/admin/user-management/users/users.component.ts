@@ -12,7 +12,8 @@ import { ConfirmDialogComponent } from "../../../shared/confirm-dialog/confirm-d
   template: `
     <div>
       <h1>Users</h1>
-      <a routerLink="/user-management/users/new" class="link button button--primary">Create User</a><br /><br />
+      <!--Task M009 Changed the button text from "Create user" to "Add New User"-->
+      <a routerLink="/user-management/users/new" class="link button button--primary">Add New User</a><br /><br />
 
       @if (deletionMessage) {
         <div class="message message--success">{{ deletionMessage }}</div>

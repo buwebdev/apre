@@ -25,7 +25,8 @@ import { environment } from '../../../../environments/environment';
           </div>
         </div>
         <div class="calendar-form__actions">
-          <button class="button button--primary" (click)="fetchPerformanceData()">Submit</button>
+          <!-- Add type and title (tooltip) to the submit button to indicate its purpose and functionality -->
+          <button type="submit" title="Click to fetch Data" class="button button--primary" (click)="fetchPerformanceData()">Submit</button>
         </div>
       </div>
 

@@ -13,7 +13,7 @@ import { ChartComponent } from '../../../shared/chart/chart.component';
     <div class="region-container">
       <form class="form" [formGroup]="regionForm" (ngSubmit)="onSubmit()">
         <div class="form__group">
-          <label class="label" for="region">Region</label>
+          <label class="label" for="region">Region<span class="required">*</span></label> <!-- Added a span tag with an * for the required label -->
           <select class="select" formControlName="region" id="region" name="region">
             @for(region of regions; track region) {
               <option value="{{ region }}">{{ region }}</option>
