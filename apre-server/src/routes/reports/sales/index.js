@@ -81,6 +81,21 @@ router.get('/regions/:region', (req, res, next) => {
   }
 });
 
+// GET /products
+//API to fetch a list of products
+router.get('/products', (req, res, next) => {
+  try {
+    mongo (async db => {
+      //Identify all products using distinct
+      const products = await db.collection('sales').distinct('product');
+      //send products to client
+      res.send(products);
+    }, next);
+  } catch (err) {
+    console.error('Error getting products: ', err);
+    next(err); 
+  }
+  
 /**
  * @description
  *
@@ -109,6 +124,43 @@ router.get('/salespeople', (req, res, next) => {
     next(err);
   }
 });
+
+//GET /products/:product
+//API to fetch sales data by product
+router.get('/products/:product', (req, res, next) => {
+  console.log(`received request for: ${req.params.product}`);
+  try {
+    mongo(async db => {
+      const salesReportByProduct = await db.collection('sales').aggregate([
+        //match specified product
+        { $match: { product: req.params.product } },
+        //group documents and calculate total amount
+        {
+          $group: {
+            _id: '$product',
+            totalSales: { $sum: '$amount' }
+          }
+        },
+        //Shape resulting documents with $project
+        {
+          $project: {
+            _id: 0,
+            product: '$_id',
+            totalSales: 1
+          }
+        },
+        //sort in ascending order
+        {
+          $sort: { product: 1 }
+        }
+        //convert results to an array and send to client
+      ]).toArray();
+      res.send(salesReportByProduct);
+    }, next);
+  } catch (err) {
+    console.error('Error fetching sales data by product', err);
+    next(err);
+  }
 
 /**
  * @description
