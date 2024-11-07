@@ -606,3 +606,57 @@ describe('Apre Sales Report API - Sales by Customer and Salesperson', () => {
     });
   });
 });
+
+// Test the sales report by category API, three tests in suite
+describe('Apre Sales Report API - Category', () => {
+  beforeEach(() => {
+    mongo.mockClear();
+  });
+ 
+  // Test the sales/categories endpoint
+  it('should fetch a list of distinct sales categories', async () => {
+    mongo.mockImplementation(async (callback) => {
+      const db = {
+        collection: jest.fn().mockReturnThis(),
+        distinct: jest.fn().mockResolvedValue(['Electronics', 'Furniture', 'Accessories', 'Wearables', 'Home Appliances', 'Personal Care'])
+      };
+      await callback(db);
+    });
+ 
+    const response = await request(app).get('/api/reports/sales/categories'); // Send a GET request to the sales/categories endpoint
+ 
+    expect(response.status).toBe(200); // Expect a 200 status code
+    expect(response.body).toEqual(['Electronics', 'Furniture', 'Accessories', 'Wearables', 'Home Appliances', 'Personal Care']); // Expect the response body to match the expected data
+  });
+ 
+  // Test the sales/categories for an invalid endpoint
+  it('should return 404 for an invalid endpoint', async () => {
+    const response = await request(app).get('/api/reports/sales/categoories'); // Send a GET request to an invalid endpoint
+    expect(response.status).toBe(404); // Expect a 404 status code
+ 
+    // Expect the response body to match the expected data
+    expect(response.body).toEqual({
+      message: 'Not Found',
+      status: 404,
+      type: 'error'
+    });
+  });
+ 
+  // Test the sales/categories endpoint with no regions found
+  it('should return 200 with an empty array if no categories are found', async () => {
+    // Mock the MongoDB implementation
+    mongo.mockImplementation(async (callback) => {
+      const db = {
+        collection: jest.fn().mockReturnThis(),
+        distinct: jest.fn().mockResolvedValue([])
+      };
+      await callback(db);
+    });
+ 
+    // Make a request to the endpoint
+    const response = await request(app).get('/api/reports/sales/categories');
+ 
+    expect(response.status).toBe(200); // Expect a 200 status code
+    expect(response.body).toEqual([]); // Expect the response body to match the expected data
+  });
+});
