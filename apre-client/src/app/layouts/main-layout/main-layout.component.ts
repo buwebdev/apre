@@ -307,6 +307,8 @@ export class MainLayoutComponent {
   salesReports = [
     { name: 'Sales by Region', url: '/reports/sales/sales-by-region' },
     { name: 'Sales by Region - Tabular', url: '/reports/sales/sales-by-region-tabular' },
+    { name: 'Sales by Year - Tabular', url: '/reports/sales/sales-by-year-tabular' },
+    { name: 'Sales by Month', url: '/reports/sales/sales-by-month' },
     // Add more reports as needed
     // Added ink for Sales by Salesperson
     { name: 'Sales by Salesperson', url: '/reports/sales/sales-by-salesperson' },
