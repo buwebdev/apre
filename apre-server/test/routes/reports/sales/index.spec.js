@@ -144,22 +144,27 @@ describe('Apre Sales Report API - Sales by Region', () => {
   });
 });
 
-//Test Suite for Sales By Product API
-describe('Apre Sales Report API - Sales By Product', () => {
+// Test the sales report API: Years
+describe('Apre Sales Report API - Sales by Year', () => {
   beforeEach(() => {
     mongo.mockClear();
   });
-  //Test for returned sales data for product
-  it('should return sales data for product', async () => {
-    // Mock the MongoDB implementation
+ 
+  // Test the sales-by-year sales/years/year endpoint
+  it('should fetch sales data for a specific year, grouped by salesperson', async () => {
     mongo.mockImplementation(async (callback) => {
+      // Mock the MongoDB collection
       const db = {
         collection: jest.fn().mockReturnThis(),
         aggregate: jest.fn().mockReturnValue({
           toArray: jest.fn().mockResolvedValue([
             {
-              product: 'Fitness Tracker',
-              totalSales: '300'
+              salesperson: 'John Doe',
+              totalSales: 1000
+            },
+            {
+              salesperson: 'Jane Smith',
+              totalSales: 1500
             }
           ])
         })
@@ -167,68 +172,101 @@ describe('Apre Sales Report API - Sales By Product', () => {
       await callback(db);
     });
  
-    // Make a request to the endpoint
-    const response = await request(app).get('/api/reports/sales/products/Fitness%20Tracker');
+    const response = await request(app).get('/api/reports/sales/sales-by-year?year=2023'); // Send a GET request to the sales/regions/:region endpoint
+    expect(response.status).toBe(200); // Expect a 200 status code
  
-    // Assert the response
-    expect(response.status).toBe(200);
+    // Expect the response body to match the expected data
     expect(response.body).toEqual([
       {
-        product: 'Fitness Tracker',
-        totalSales: '300'
+        salesperson: 'John Doe',
+        totalSales: 1000
+      },
+      {
+        salesperson: 'Jane Smith',
+        totalSales: 1500
       }
     ]);
   });
  
-  //Test for returning an empty array if no sales data is found for a product
-  it('should return an empty array and 200 status if no sales data is found for product', async () => {
-    //Mock the mongoDB implementation
+  // Test the sales-by-year endpoint with missing parameters
+  it('should return 400 if the year parameter is missing', async () => {
+    const response = await request(app).get('/api/reports/sales/sales-by-year'); // Send a GET request to the channel-rating-by-month endpoint with missing month
+    expect(response.status).toBe(400); // Expect a 400 status code
+ 
+    // Expect the response body to match the expected data
+    expect(response.body).toEqual({
+      message: 'year is required',
+      status: 400,
+      type: 'error'
+    });
+  });
+ 
+  // it should return 404 for invalid endpoint
+  it('should return 404 for an invalid endpoint', async () => {
+    // Make a request to an invalid endpoint
+    const response = await request(app).get('/api/reports/sales-by-year/2');
+ 
+    // Assert the response
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({
+      message: 'Not Found',
+      status: 404,
+      type: 'error'
+    });
+  });
+});
+
+// Test the monthly sales data report API
+describe('Apre Sales Report API - Monthly sales data', () => {
+  beforeEach(() => {
+    mongo.mockClear();
+  });
+ 
+// Test the monthly endpoint with missing parameters
+  it('should return 400 if month and/or year are missing', async () => {
+    // Make a request to the endpoint
+    const response = await request(app).get('/api/reports/sales/monthly');
+ 
+    // Assert the response
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message: 'Month and year are required',
+      status: 400,
+      type: 'error'
+    });
+  });
+ 
+  // Test the monthly endpoint with an invalid month number
+  it('should return 400 if month is less than 1 or greater than 12', async () => {
+    // Make a request to the endpoint
+    const response = await request(app).get('/api/reports/sales/monthly?month=0&year=2023');
+ 
+    // Assert the response
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message: 'Month must be a number between 1 and 12',
+      status: 400,
+      type: 'error'
+    });
+  });
+ 
+  it('should return 200 with an empty array if no sales data is found', async () => {
     mongo.mockImplementation(async (callback) => {
       const db = {
         collection: jest.fn().mockReturnThis(),
-        aggregate: jest.fn().mockReturnValue({
-          toArray: jest.fn().mockResolvedValue([])
-        })
+        find: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockReturnThis(),
+        toArray: jest.fn().mockResolvedValue([])
       };
       await callback(db);
-    });
+    })
  
     // Make a request to the endpoint
-    const response = await request(app).get('/api/reports/sales/products/Fake%20Product');
+    const response = await request(app).get('/api/reports/sales/monthly?month=9&year=2023');
  
-    //Expected response
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual([]);
+    expect(response.status).toBe(200); // Expect a 200 status code
+    expect(response.body).toEqual([]); // Expect the response body to match the expected data
   });
- 
- 
-  //Test for returned product and totalSales fields
-  it('should return data with product and totalSales fields', async () => {
-    //Mock implementation
-    mongo.mockImplementation(async (callback) => {
-      const db = {
-        collection: jest.fn().mockReturnThis(),
-        aggregate: jest.fn().mockReturnValue({
-          toArray: jest.fn().mockResolvedValue([
-            {
-              product: 'Smart Watch',
-              totalSales: '4300'
-            }
-          ])
-        })
-      };
-      await callback(db);
-    });
- 
-    //Make request to the endpoint
-    const response = await request(app).get('/api/reports/sales/products/Smart%20Watch');
-    const data = response.body[0];
- 
-    //Expected response
-    expect(data).toHaveProperty('product');
-    expect(data).toHaveProperty('totalSales');
-  });
- 
 });
 
 // Test suite for the sales report API to fetch an array of distinct salesperson
@@ -407,80 +445,22 @@ describe('Apre Sales Report API - Sales by Salesperson', () => {
   });
 });
 
-// Test the monthly sales data report API
-describe('Apre Sales Report API - Monthly sales data', () => {
+//Test Suite for Sales By Product API
+describe('Apre Sales Report API - Sales By Product', () => {
   beforeEach(() => {
     mongo.mockClear();
   });
- 
-// Test the monthly endpoint with missing parameters
-  it('should return 400 if month and/or year are missing', async () => {
-    // Make a request to the endpoint
-    const response = await request(app).get('/api/reports/sales/monthly');
- 
-    // Assert the response
-    expect(response.status).toBe(400);
-    expect(response.body).toEqual({
-      message: 'Month and year are required',
-      status: 400,
-      type: 'error'
-    });
-  });
- 
-  // Test the monthly endpoint with an invalid month number
-  it('should return 400 if month is less than 1 or greater than 12', async () => {
-    // Make a request to the endpoint
-    const response = await request(app).get('/api/reports/sales/monthly?month=0&year=2023');
- 
-    // Assert the response
-    expect(response.status).toBe(400);
-    expect(response.body).toEqual({
-      message: 'Month must be a number between 1 and 12',
-      status: 400,
-      type: 'error'
-    });
-  });
- 
-  it('should return 200 with an empty array if no sales data is found', async () => {
+  //Test for returned sales data for product
+  it('should return sales data for product', async () => {
+    // Mock the MongoDB implementation
     mongo.mockImplementation(async (callback) => {
-      const db = {
-        collection: jest.fn().mockReturnThis(),
-        find: jest.fn().mockReturnThis(),
-        sort: jest.fn().mockReturnThis(),
-        toArray: jest.fn().mockResolvedValue([])
-      };
-      await callback(db);
-    })
- 
-    // Make a request to the endpoint
-    const response = await request(app).get('/api/reports/sales/monthly?month=9&year=2023');
- 
-    expect(response.status).toBe(200); // Expect a 200 status code
-    expect(response.body).toEqual([]); // Expect the response body to match the expected data
-  });
-});
-
-// Test the sales report API: Years
-describe('Apre Sales Report API - Sales by Year', () => {
-  beforeEach(() => {
-    mongo.mockClear();
-  });
- 
-  // Test the sales-by-year sales/years/year endpoint
-  it('should fetch sales data for a specific year, grouped by salesperson', async () => {
-    mongo.mockImplementation(async (callback) => {
-      // Mock the MongoDB collection
       const db = {
         collection: jest.fn().mockReturnThis(),
         aggregate: jest.fn().mockReturnValue({
           toArray: jest.fn().mockResolvedValue([
             {
-              salesperson: 'John Doe',
-              totalSales: 1000
-            },
-            {
-              salesperson: 'Jane Smith',
-              totalSales: 1500
+              product: 'Fitness Tracker',
+              totalSales: '300'
             }
           ])
         })
@@ -488,40 +468,135 @@ describe('Apre Sales Report API - Sales by Year', () => {
       await callback(db);
     });
  
-    const response = await request(app).get('/api/reports/sales/sales-by-year?year=2023'); // Send a GET request to the sales/regions/:region endpoint
-    expect(response.status).toBe(200); // Expect a 200 status code
+    // Make a request to the endpoint
+    const response = await request(app).get('/api/reports/sales/products/Fitness%20Tracker');
  
-    // Expect the response body to match the expected data
+    // Assert the response
+    expect(response.status).toBe(200);
     expect(response.body).toEqual([
       {
-        salesperson: 'John Doe',
-        totalSales: 1000
-      },
-      {
-        salesperson: 'Jane Smith',
-        totalSales: 1500
+        product: 'Fitness Tracker',
+        totalSales: '300'
       }
     ]);
   });
  
-  // Test the sales-by-year endpoint with missing parameters
-  it('should return 400 if the year parameter is missing', async () => {
-    const response = await request(app).get('/api/reports/sales/sales-by-year'); // Send a GET request to the channel-rating-by-month endpoint with missing month
-    expect(response.status).toBe(400); // Expect a 400 status code
- 
-    // Expect the response body to match the expected data
-    expect(response.body).toEqual({
-      message: 'year is required',
-      status: 400,
-      type: 'error'
+  //Test for returning an empty array if no sales data is found for a product
+  it('should return an empty array and 200 status if no sales data is found for product', async () => {
+    //Mock the mongoDB implementation
+    mongo.mockImplementation(async (callback) => {
+      const db = {
+        collection: jest.fn().mockReturnThis(),
+        aggregate: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockResolvedValue([])
+        })
+      };
+      await callback(db);
     });
+ 
+    // Make a request to the endpoint
+    const response = await request(app).get('/api/reports/sales/products/Fake%20Product');
+ 
+    //Expected response
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
   });
  
-  // it should return 404 for invalid endpoint
+ 
+  //Test for returned product and totalSales fields
+  it('should return data with product and totalSales fields', async () => {
+    //Mock implementation
+    mongo.mockImplementation(async (callback) => {
+      const db = {
+        collection: jest.fn().mockReturnThis(),
+        aggregate: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockResolvedValue([
+            {
+              product: 'Smart Watch',
+              totalSales: '4300'
+            }
+          ])
+        })
+      };
+      await callback(db);
+    });
+ 
+    //Make request to the endpoint
+    const response = await request(app).get('/api/reports/sales/products/Smart%20Watch');
+    const data = response.body[0];
+ 
+    //Expected response
+    expect(data).toHaveProperty('product');
+    expect(data).toHaveProperty('totalSales');
+  });
+ 
+});
+
+// Test the sales report API that fetches sales by customer and salesperson
+describe('Apre Sales Report API - Sales by Customer and Salesperson', () => {
+  beforeEach(() => {
+    mongo.mockClear();
+  });
+
+  // Test the sales/customers-salespeople/:customer&:salesperson endpoint
+  it('should fetch sales data for a specific customer and salesperson', async () => {
+    mongo.mockImplementation(async (callback) => {
+      // Mock the MongoDB collection
+      const db = {
+        collection: jest.fn().mockReturnThis(),
+        aggregate: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockResolvedValue([
+            {
+              product: 'Gaming Console',
+              category: 'Electronics',
+              saleAmount: 500
+            }
+          ])
+        })
+      };
+      await callback(db);
+    });
+
+    // Send a GET request to the sales/customers-salespeople/:customer&:salesperson
+    const response = await request(app).get('/api/reports/sales/customers-salespeople/Epsilon%20Ltd&David%20Wilson');
+    expect(response.status).toBe(200); // Expect a 200 status code
+
+    // Expect the response body to match the expected data
+    expect(response.body).toEqual([
+      {
+        product: 'Gaming Console',
+        category: 'Electronics',
+        saleAmount: 500
+      }
+    ]);
+  });
+
+  // Test the sales/customers-salespeople/unknown-customer&unknown-salesperson endpoint
+  it('should return 200 and an empty array if no sales data is found for the customer and salesperson', async () => {
+    // Mock the MongoDB implementation
+    mongo.mockImplementation(async (callback) => {
+      const db = {
+        collection: jest.fn().mockReturnThis(),
+        aggregate: jest.fn().mockReturnValue({
+          toArray: jest.fn().mockResolvedValue([])
+        })
+      };
+      await callback(db);
+    });
+
+    // Make a request to the endpoint
+    const response = await request(app).get('/api/reports/sales/customers-salespeople/unknown-customer&unknown-salesperson');
+
+    // Assert the response
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  // Test the sales/customers-salespeople/wrong-customer endpoint
   it('should return 404 for an invalid endpoint', async () => {
     // Make a request to an invalid endpoint
-    const response = await request(app).get('/api/reports/sales-by-year/2');
- 
+    const response = await request(app).get('/api/reports/sales/customers-salespeople/Mark Clark');
+
     // Assert the response
     expect(response.status).toBe(404);
     expect(response.body).toEqual({
