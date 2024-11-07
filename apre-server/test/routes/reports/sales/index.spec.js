@@ -142,7 +142,6 @@ describe('Apre Sales Report API - Sales by Region', () => {
       type: 'error'
     });
   });
-<<<<<<< HEAD
 });
 
 // Test the sales report by category API, three tests in suite
@@ -197,6 +196,4 @@ describe('Apre Sales Report API - Category', () => {
     expect(response.status).toBe(200); // Expect a 200 status code
     expect(response.body).toEqual([]); // Expect the response body to match the expected data
   });
-=======
->>>>>>> bc586519cc4ee7954dcb67f34bee9d812cf63712
 });
