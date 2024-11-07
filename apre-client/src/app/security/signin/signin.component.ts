@@ -21,7 +21,9 @@ import { CookieService } from 'ngx-cookie-service';
       <form [formGroup]="signinForm" (ngSubmit)="signin();" class="signin__form">
         <div class="signin__form-group">
           <label for="username" class="signin__label">Username</label>
-          <input id="username" formControlName="username" type="text" class="signin__input" />
+          <!-- Added a placeholder to the username input with the text "Enter your username" to display an example inside the
+          input field before the user starts typing. -->
+          <input id="username" formControlName="username" type="text" class="signin__input" placeholder="Enter your username"/>
         </div>
         <div class="signin__form-group">
           <label for="password" class="signin__label">Password</label>
