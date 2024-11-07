@@ -117,9 +117,10 @@ router.get('/products', (req, res, next) => {
     }, next);
   } catch (err) {
     console.error('Error getting products: ', err);
-    next(err); 
+    next(err);
   }
-  
+});
+
 
 /**
  * @description
@@ -149,8 +150,8 @@ router.get('/salespeople', (req, res, next) => {
     next(err);
   }
 });
-  
-  
+
+
 /**
  * @description
  *
@@ -194,8 +195,9 @@ router.get('/customers-salespeople/:customer&:salesperson', (req, res, next) => 
     console.error('Error getting sales data for customer and salesperson: ', err);
     next(err);
   }
+});
 
-  
+
 //GET /products/:product
 //API to fetch sales data by product
 router.get('/products/:product', (req, res, next) => {
@@ -232,6 +234,7 @@ router.get('/products/:product', (req, res, next) => {
     console.error('Error fetching sales data by product', err);
     next(err);
   }
+});
 
 /**
  * @description
@@ -296,8 +299,9 @@ router.get('/salespeople/:personName', (req, res, next) => {
     // Pass our error object to the next middleware
     next(err);
   }
+});
 
-/* 
+/*
  * GET /sales-by-year
  *
  * Fetches sales data for a specific year, grouped by salesperson.
@@ -351,7 +355,8 @@ router.get("/sales-by-year", (req, res, next) => {
     console.error("Error getting sales data for year: ", err);
     next(err);
 }
-  
+});
+
 /*
  * GET /monthly/
  *
@@ -399,7 +404,7 @@ try {
   next(err);
 }
 });
-  
+
 /**
  * @description
  *
@@ -423,7 +428,7 @@ router.get('/categories', (req, res, next) => {
     next(err);
   }
 });
- 
+
 /**
  * @description
  *

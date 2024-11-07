@@ -21,7 +21,7 @@ import { UserCreateComponent } from './admin/user-management/user-create/user-cr
 import { SalesByRegionComponent } from './reports/sales/sales-by-region/sales-by-region.component';
 import { SalesComponent } from './reports/sales/sales.component';
 import { AgentPerformanceComponent } from './reports/agent-performance/agent-performance.component';
-import { CallDurationByDateRangeComponent } from './reports/agent-performance/call-duration-by-date-range/call-duration-by-date-range.component';
+import { CallDurationByDateRangeComponent } from './reports/agent-performance/call-duration-by-date-range/call-duration-by-date-range.component';1
 import { ChannelRatingByMonthComponent } from './reports/customer-feedback/channel-rating-by-month/channel-rating-by-month.component';
 import { CustomerFeedbackComponent } from './reports/customer-feedback/customer-feedback.component';
 import { SalesByRegionTabularComponent } from './reports/sales/sales-by-region-tabular/sales-by-region-tabular.component';
@@ -68,9 +68,10 @@ export const salesReportRoutes: Routes = [
     path: 'sales-by-category',
     component: SalesByCategoryComponent
   },
+  {
     path: 'sales-by-customer-salesperson',
     component: SalesByCustomerSalespersonComponent
-  }
+  },
   //Add route to sales-by-product
   {
     path: 'sales-by-product',

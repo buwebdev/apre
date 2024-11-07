@@ -49,15 +49,15 @@ describe('SalesByProductComponent', () => {
   });
 
   it('should pass sales data to the table', () => {
-    //Set mock sales data and update the template
-    component.salesData = [{ product: 'Watch', totalSales: 578 }];
+    // Set mock sales data and update the template
+    component.salesData = [{ Product: 'Watch', 'Total Sales': 578 }];
     fixture.detectChanges();
 
-    //Select app-table rows
+    // Select app-table rows
     const table = fixture.nativeElement.querySelector('app-table');
     const rows = table.querySelectorAll('tr');
 
-    //check data within table rows
+    // Check data within table rows
     expect(rows[1].cells[0].textContent).toContain('Watch');
     expect(rows[1].cells[1].textContent).toContain('578');
   });
