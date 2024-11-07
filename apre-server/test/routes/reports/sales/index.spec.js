@@ -144,6 +144,7 @@ describe('Apre Sales Report API - Sales by Region', () => {
   });
 });
 
+// Test the sales report API that fetches sales by customer and salesperson
 describe('Apre Sales Report API - Sales by Customer and Salesperson', () => {
   beforeEach(() => {
     mongo.mockClear();
@@ -182,6 +183,7 @@ describe('Apre Sales Report API - Sales by Customer and Salesperson', () => {
     ]);
   });
 
+  // Test the sales/customers-salespeople/unknown-customer&unknown-salesperson endpoint
   it('should return 200 and an empty array if no sales data is found for the customer and salesperson', async () => {
     // Mock the MongoDB implementation
     mongo.mockImplementation(async (callback) => {
@@ -202,6 +204,7 @@ describe('Apre Sales Report API - Sales by Customer and Salesperson', () => {
     expect(response.body).toEqual([]);
   });
 
+  // Test the sales/customers-salespeople/wrong-customer endpoint
   it('should return 404 for an invalid endpoint', async () => {
     // Make a request to an invalid endpoint
     const response = await request(app).get('/api/reports/sales/customers-salespeople/Mark Clark');

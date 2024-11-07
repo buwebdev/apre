@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SalesByCustomerSalespersonComponent } from './sales-by-customer-salesperson.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('SalesByCustomerSalespersonComponent', () => {
   let component: SalesByCustomerSalespersonComponent;
@@ -8,7 +9,7 @@ describe('SalesByCustomerSalespersonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SalesByCustomerSalespersonComponent]
+      imports: [HttpClientTestingModule, SalesByCustomerSalespersonComponent]
     })
     .compileComponents();
 
@@ -36,7 +37,7 @@ describe('SalesByCustomerSalespersonComponent', () => {
     expect(customerControl.value).toBeNull();
     expect(customerControl.valid).toBeFalse();
     expect(salespersonControl.value).toBeNull();
-    expect(salespersonControl.value).toBeFalse();
+    expect(salespersonControl.valid).toBeFalse();
   });
 
   it('should not submit the form if no customer and salesperson are selected', () => {
