@@ -143,14 +143,65 @@ describe('Apre Sales Report API - Sales by Region', () => {
     });
   });
 });
-
+// Test the monthly sales data report API
+describe('Apre Sales Report API - Monthly sales data', () => {
+  beforeEach(() => {
+    mongo.mockClear();
+  });
+ 
+// Test the monthly endpoint with missing parameters
+  it('should return 400 if month and/or year are missing', async () => {
+    // Make a request to the endpoint
+    const response = await request(app).get('/api/reports/sales/monthly');
+ 
+    // Assert the response
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message: 'Month and year are required',
+      status: 400,
+      type: 'error'
+    });
+  });
+ 
+  // Test the monthly endpoint with an invalid month number
+  it('should return 400 if month is less than 1 or greater than 12', async () => {
+    // Make a request to the endpoint
+    const response = await request(app).get('/api/reports/sales/monthly?month=0&year=2023');
+ 
+    // Assert the response
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message: 'Month must be a number between 1 and 12',
+      status: 400,
+      type: 'error'
+    });
+  });
+ 
+  it('should return 200 with an empty array if no sales data is found', async () => {
+    mongo.mockImplementation(async (callback) => {
+      const db = {
+        collection: jest.fn().mockReturnThis(),
+        find: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockReturnThis(),
+        toArray: jest.fn().mockResolvedValue([])
+      };
+      await callback(db);
+    })
+ 
+    // Make a request to the endpoint
+    const response = await request(app).get('/api/reports/sales/monthly?month=9&year=2023');
+ 
+    expect(response.status).toBe(200); // Expect a 200 status code
+    expect(response.body).toEqual([]); // Expect the response body to match the expected data
+  });
+});
 
 // Test the sales report API: Years
 describe('Apre Sales Report API - Sales by Year', () => {
   beforeEach(() => {
     mongo.mockClear();
   });
-
+ 
   // Test the sales-by-year sales/years/year endpoint
   it('should fetch sales data for a specific year, grouped by salesperson', async () => {
     mongo.mockImplementation(async (callback) => {
@@ -172,10 +223,10 @@ describe('Apre Sales Report API - Sales by Year', () => {
       };
       await callback(db);
     });
-
+ 
     const response = await request(app).get('/api/reports/sales/sales-by-year?year=2023'); // Send a GET request to the sales/regions/:region endpoint
     expect(response.status).toBe(200); // Expect a 200 status code
-
+ 
     // Expect the response body to match the expected data
     expect(response.body).toEqual([
       {
@@ -188,12 +239,12 @@ describe('Apre Sales Report API - Sales by Year', () => {
       }
     ]);
   });
-
+ 
   // Test the sales-by-year endpoint with missing parameters
   it('should return 400 if the year parameter is missing', async () => {
     const response = await request(app).get('/api/reports/sales/sales-by-year'); // Send a GET request to the channel-rating-by-month endpoint with missing month
     expect(response.status).toBe(400); // Expect a 400 status code
-
+ 
     // Expect the response body to match the expected data
     expect(response.body).toEqual({
       message: 'year is required',
@@ -201,12 +252,12 @@ describe('Apre Sales Report API - Sales by Year', () => {
       type: 'error'
     });
   });
-
+ 
   // it should return 404 for invalid endpoint
   it('should return 404 for an invalid endpoint', async () => {
     // Make a request to an invalid endpoint
     const response = await request(app).get('/api/reports/sales-by-year/2');
-
+ 
     // Assert the response
     expect(response.status).toBe(404);
     expect(response.body).toEqual({
@@ -216,4 +267,5 @@ describe('Apre Sales Report API - Sales by Year', () => {
     });
   });
 });
+
 
