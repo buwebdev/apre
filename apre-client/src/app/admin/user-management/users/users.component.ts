@@ -36,7 +36,12 @@ import { ConfirmDialogComponent } from "../../../shared/confirm-dialog/confirm-d
                   <i class="fas fa-edit"></i>
                 </a> &nbsp;
                 <a (click)="confirmDelete(user._id)">
-                  <i class="fas fa-trash"></i>
+                <!--Task M-010: Add a tooltip to the delete icon saying "Delete User"-->
+                 <div class="hover-text">
+                    <i class="fas fa-trash">
+                      <span class="tooltip-text">Delete User</span>
+                    </i>
+                  </div>
                 </a>
               </td>
             </tr>
@@ -49,6 +54,17 @@ import { ConfirmDialogComponent } from "../../../shared/confirm-dialog/confirm-d
     }
   `,
   styles: `
+
+/*Styles to hide tooltip*/
+  .tooltip-text {
+    visibility: hidden;
+    position: absolute;
+  }
+
+/*Styles to make tooltip visible when hovering */
+  .hover-text:hover .tooltip-text {
+    visibility: visible;
+  }
   `
 })
 export class UsersComponent {
