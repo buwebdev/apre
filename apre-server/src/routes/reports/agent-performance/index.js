@@ -93,4 +93,113 @@ router.get('/call-duration-by-date-range', (req, res, next) => {
   }
 });
 
+/**
+ * @description
+ *
+ * GET /performance-by-metric/:metricName
+ *
+ * Fetches call performance data for agents by specified metric.
+ *
+ * Example:
+ * fetch('/performance-by-metric/Sales Conversion')
+ *  .then(response => response.json())
+ *  .then(data => console.log(data));
+ */
+router.get('/performance-by-metric/:metricName', (req, res, next) => {
+  // Assign parameter to a variable for easy reference
+  const metricName = req.params.metricName;
+
+  // Surround our query in a try-catch for added safety
+  try {
+    mongo (async db => {
+      // Query our database for data related to the desired metric
+      const perfDataForMetric = await db.collection('agentPerformance').aggregate([
+        // Match on the provided personName
+        {
+          $match: {
+            performanceMetrics: {
+              $elemMatch: {
+                metricType: metricName
+              }
+            }
+          }
+        },
+        // Lookup/join on agents
+        {
+          $lookup: {
+            from: "agents",
+            localField: "agentId",
+            foreignField: "agentId",
+            as: "agentDetails"
+          }
+        },
+        // Unwind the agent details
+        {
+          $unwind: "$agentDetails"
+        },
+        // Get the agent data
+        {
+          $group: {
+            _id: null,
+            agentInfo: {
+              $addToSet: {
+                // Agent Name
+                agentName: "$agentDetails.name",
+                // Sum the performance data for the desired metric
+                performanceTotals: {
+                  // Obtain the performance total so that it is not an array
+                  $arrayElemAt: [
+                    {
+                      // Create an array of the desired metric
+                      $map: {
+                        input: {
+                          // Filter to get the sub-documents of the desired metric
+                          $filter: {
+                            input:
+                              "$performanceMetrics",
+                            as: "aMetric",
+                            cond: {
+                              $eq: [
+                                "$$aMetric.metricType",
+                                metricName
+                              ]
+                            }
+                          }
+                        },
+                        as: "desiredMetric",
+                        in: {
+                          // Total up the performance values of the desired metric
+                          $sum: "$$desiredMetric.value"
+                        }
+                      }
+                    },
+                    0
+                  ]
+                }
+              }
+            }
+          }
+        },
+        // Project the two arrays
+        {
+          $project: {
+            agentNames: "$agentInfo.agentName",
+            performanceTotals: "$agentInfo.performanceTotals"
+          }
+        }
+
+
+      ]).toArray();
+      // Send our results to the response
+      res.send(perfDataForMetric);
+    }, next);
+
+  } catch (err) {
+    // Log the error
+    console.error('Error getting performance data by metric', err);
+    // Pass our error object to the next middleware
+    next(err);
+  }
+});
+
 module.exports = router;
