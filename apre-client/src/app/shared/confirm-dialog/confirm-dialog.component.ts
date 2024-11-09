@@ -13,6 +13,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   standalone: true,
   imports: [],
   template: `
+    <div class="confirm-dialog-bg"></div> <!-- div for confirm dialog background -->
     <div class="confirm-dialog">
       <h1 class="confirm-dialog__title">{{ header }}</h1>
       <p class="confirm-dialog__message">{{ message }}</p>
@@ -23,6 +24,21 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     </div>
   `,
   styles: `
+    /*
+    CSS for confirm-dialog-bg based on
+    https://www.w3schools.com/howto/howto_css_overlay.asp
+    */
+    .confirm-dialog-bg { /* Class for semi-transparent background overlay */
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(50, 50, 50, 0.75);
+      z-index: 2;
+    }
     .confirm-dialog {
       position: fixed;
       top: 50%;
