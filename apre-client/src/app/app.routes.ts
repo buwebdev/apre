@@ -32,6 +32,8 @@ import { SalesByProductComponent } from './reports/sales/sales-by-product/sales-
 import { SalesBySalespersonComponent } from './reports/sales/sales-by-salesperson/sales-by-salesperson.component';
 import { SalesByYearTabularComponent } from './reports/sales/sales-by-year-tabular/sales-by-year-tabular.component';
 import { SalesByMonthComponent } from './reports/sales/sales-by-month/sales-by-month.component';
+//import agent-performance related reports
+import { PerformanceByMetricComponent } from './reports/agent-performance/performance-by-metric/performance-by-metric.component';
 
 // Export user-management routes
 export const userManagementRoutes: Routes = [
@@ -97,6 +99,10 @@ export const agentPerformanceRoutes: Routes = [
   {
     path: 'call-duration-by-date-range',
     component: CallDurationByDateRangeComponent
+  },
+  {
+    path: 'performance-by-metric',
+    component: PerformanceByMetricComponent
   }
 ];
 
