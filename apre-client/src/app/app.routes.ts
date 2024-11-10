@@ -21,7 +21,7 @@ import { UserCreateComponent } from './admin/user-management/user-create/user-cr
 import { SalesByRegionComponent } from './reports/sales/sales-by-region/sales-by-region.component';
 import { SalesComponent } from './reports/sales/sales.component';
 import { AgentPerformanceComponent } from './reports/agent-performance/agent-performance.component';
-import { CallDurationByDateRangeComponent } from './reports/agent-performance/call-duration-by-date-range/call-duration-by-date-range.component';1
+import { CallDurationByDateRangeComponent } from './reports/agent-performance/call-duration-by-date-range/call-duration-by-date-range.component';
 import { ChannelRatingByMonthComponent } from './reports/customer-feedback/channel-rating-by-month/channel-rating-by-month.component';
 import { CustomerFeedbackComponent } from './reports/customer-feedback/customer-feedback.component';
 import { SalesByRegionTabularComponent } from './reports/sales/sales-by-region-tabular/sales-by-region-tabular.component';
@@ -32,6 +32,7 @@ import { SalesByProductComponent } from './reports/sales/sales-by-product/sales-
 import { SalesBySalespersonComponent } from './reports/sales/sales-by-salesperson/sales-by-salesperson.component';
 import { SalesByYearTabularComponent } from './reports/sales/sales-by-year-tabular/sales-by-year-tabular.component';
 import { SalesByMonthComponent } from './reports/sales/sales-by-month/sales-by-month.component';
+import { AgentPerformanceByCustomerFeedbackComponent } from './reports/agent-performance/agent-performance-by-customer-feedback/agent-performance-by-customer-feedback.component';
 
 // Export user-management routes
 export const userManagementRoutes: Routes = [
@@ -97,6 +98,10 @@ export const agentPerformanceRoutes: Routes = [
   {
     path: 'call-duration-by-date-range',
     component: CallDurationByDateRangeComponent
+  },
+  {
+    path: 'agent-performance-by-customer-feedback',
+    component: AgentPerformanceByCustomerFeedbackComponent
   }
 ];
 
